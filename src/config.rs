@@ -2,6 +2,7 @@ use directories::ProjectDirs;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{self, Write};
+use std::path::PathBuf;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
@@ -11,62 +12,118 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn load() -> io::Result<Option<Config>> {
-        let config_path = get_config_path()?;
-        if config_path.exists() {
-            let config_str = fs::read_to_string(config_path)?;
-            Ok(Some(serde_json::from_str(&config_str)?))
-        } else {
-            Ok(None)
-        }
-    }
-
     pub fn setup() -> io::Result<Config> {
-        println!("🔄 Notes Sync Initial Setup");
-
-        // Try to load existing configuration
         let existing_config = Self::load()?.unwrap_or(Config {
             github_token: String::new(),
             github_repo: String::new(),
             directory_path: String::new(),
         });
 
+        println!("\nSetup Configuration");
+        println!("-------------------");
+
+        // GitHub Token
+        if !existing_config.github_token.is_empty() {
+            println!("Current GitHub token: {}", existing_config.github_token);
+        }
+        print!("Enter your GitHub token (press Enter to keep current): ");
+        io::stdout().flush()?;
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+        let github_token = input.trim().to_string();
+
+        // GitHub Repo
+        if !existing_config.github_repo.is_empty() {
+            println!("Current repository: {}", existing_config.github_repo);
+        }
+        print!("Enter repository (format: username/repo, press Enter to keep current): ");
+        io::stdout().flush()?;
+        input.clear();
+        io::stdin().read_line(&mut input)?;
+        let github_repo = input.trim().to_string();
+
+        // Directory Path
+        if !existing_config.directory_path.is_empty() {
+            println!("Current directory path: {}", existing_config.directory_path);
+        }
+        print!("Enter path to your directory to sync (press Enter to keep current): ");
+        io::stdout().flush()?;
+        input.clear();
+        io::stdin().read_line(&mut input)?;
+        let directory_path = input.trim().to_string();
+
         let config = Config {
-            github_token: prompt_with_default(
-                "Enter your GitHub token (https://github.com/settings/tokens)",
-                &existing_config.github_token,
-            )?,
-            github_repo: prompt_with_default(
-                "Enter repository (format: username/repo)",
-                &existing_config.github_repo,
-            )?,
-            directory_path: prompt_with_default(
-                "Enter path to your directory to sync",
-                &existing_config.directory_path,
-            )?,
+            github_token: if github_token.is_empty() {
+                existing_config.github_token
+            } else {
+                github_token
+            },
+            github_repo: if github_repo.is_empty() {
+                existing_config.github_repo
+            } else {
+                github_repo
+            },
+            directory_path: if directory_path.is_empty() {
+                existing_config.directory_path
+            } else {
+                directory_path
+            },
         };
 
         config.save()?;
         Ok(config)
     }
 
+    pub fn load() -> io::Result<Option<Config>> {
+        let config_path = get_config_path()?;
+        if !config_path.exists() {
+            return Ok(None);
+        }
+
+        match fs::read_to_string(&config_path) {
+            Ok(config_str) => match serde_json::from_str(&config_str) {
+                Ok(config) => Ok(Some(config)),
+                Err(e) => {
+                    eprintln!("Warning: Config file is corrupted: {}", e);
+                    if let Err(e) = fs::copy(&config_path, config_path.with_extension("json.bak")) {
+                        eprintln!("Failed to create backup: {}", e);
+                    }
+                    Ok(None)
+                }
+            },
+            Err(e) => {
+                eprintln!("Warning: Could not read config file: {}", e);
+                Ok(None)
+            }
+        }
+    }
+
     pub fn save(&self) -> io::Result<()> {
         let config_path = get_config_path()?;
+        let config_dir = config_path
+            .parent()
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "Invalid config path"))?;
+
+        if !config_dir.exists() {
+            fs::create_dir_all(config_dir)?;
+        }
+
+        let temp_path = config_path.with_extension("json.tmp");
         let config_json = serde_json::to_string_pretty(&self)?;
-        fs::write(&config_path, config_json)?;
+        fs::write(&temp_path, &config_json)?;
+
+        fs::rename(&temp_path, &config_path)?;
+
         println!("\n✅ Configuration saved successfully at:");
         println!("{}", config_path.display());
         Ok(())
     }
 }
 
-fn get_config_path() -> io::Result<std::path::PathBuf> {
-    let proj_dirs = ProjectDirs::from("com", "notesync", "notesync")
-        .expect("Could not get configuration directory");
-
-    let config_dir = proj_dirs.config_dir();
-    fs::create_dir_all(config_dir)?;
-    Ok(config_dir.join("config.json"))
+fn get_config_path() -> io::Result<PathBuf> {
+    ProjectDirs::from("com", "gitsync", "gitsync")
+        .map(|proj_dirs| proj_dirs.config_dir().join("config.json"))
+        .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "Could not determine config directory"))
 }
 
 #[allow(dead_code)]
@@ -76,27 +133,6 @@ fn prompt(message: &str) -> io::Result<String> {
     let mut input = String::new();
     io::stdin().read_line(&mut input)?;
     Ok(input.trim().to_string())
-}
-
-fn prompt_with_default(message: &str, default: &str) -> io::Result<String> {
-    let prompt_message = if default.is_empty() {
-        format!("{}: ", message)
-    } else {
-        format!("{} [{}]: ", message, default)
-    };
-
-    print!("{}", prompt_message);
-    io::stdout().flush()?;
-
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
-    let input = input.trim();
-
-    Ok(if input.is_empty() {
-        default.to_string()
-    } else {
-        input.to_string()
-    })
 }
 
 #[cfg(test)]
@@ -213,5 +249,37 @@ mod tests {
         assert!(config.github_token.is_empty());
         assert!(config.github_repo.is_empty());
         assert!(config.directory_path.is_empty());
+    }
+
+    #[test]
+    fn test_config_atomic_save() -> io::Result<()> {
+        let temp_dir = TempDir::new()?;
+        let test_config = Config {
+            github_token: "test_token".to_string(),
+            github_repo: "test/repo".to_string(),
+            directory_path: "/test/path".to_string(),
+        };
+
+        let config_path = temp_dir.path().join("config.json");
+
+        fs::write(&config_path, serde_json::to_string_pretty(&test_config)?)?;
+
+        let temp_path = config_path.with_extension("json.tmp");
+        fs::write(&temp_path, "corrupted data")?;
+
+        let loaded_config: Option<Config> = match fs::read_to_string(&config_path) {
+            Ok(content) => serde_json::from_str(&content).ok(),
+            Err(_) => None,
+        };
+
+        assert!(loaded_config.is_some());
+
+        if let Some(config) = loaded_config {
+            assert_eq!(config.github_token, test_config.github_token);
+            assert_eq!(config.github_repo, test_config.github_repo);
+            assert_eq!(config.directory_path, test_config.directory_path);
+        }
+
+        Ok(())
     }
 }

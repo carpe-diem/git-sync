@@ -1,4 +1,5 @@
 mod config;
+mod sync;
 
 use clap::{Parser, Subcommand};
 use std::io;
@@ -28,10 +29,10 @@ fn main() -> io::Result<()> {
             println!("{:#?}", config);
         }
         Commands::Sync => {
-            let _config =
+            let config =
                 config::Config::load()?.expect("No configuration found. Please run 'setup' first");
-            println!("Synchronizing notes...");
-            // TODO: Implement synchronization
+            let sync = sync::Sync::new(config);
+            sync.run()?;
         }
     }
 

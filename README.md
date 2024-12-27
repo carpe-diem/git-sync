@@ -1,6 +1,6 @@
 # Notes Sync
 
-![Rust CI](https://github.com/{username}/{repo}/actions/workflows/rust.yml/badge.svg)
+![Rust CI](https://github.com/carpe-diem/notes-sync/actions/workflows/rust.yml/badge.svg)
 
 A simple application to synchronize your notes with GitHub. Keep your notes backed up and accessible across multiple devices using Git as the synchronization mechanism.
 

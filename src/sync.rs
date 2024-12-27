@@ -182,19 +182,20 @@ mod tests {
 
     fn init_git_repo(dir: &Path) -> io::Result<()> {
         Command::new("git")
-            .args(["init"])
+            .args(["init", "--initial-branch=main"])
             .current_dir(dir)
             .status()?;
 
-        Command::new("git")
-            .args(["config", "--local", "user.name", "Test User"])
-            .current_dir(dir)
-            .status()?;
-
-        Command::new("git")
-            .args(["config", "--local", "user.email", "test@example.com"])
-            .current_dir(dir)
-            .status()?;
+        for &(key, value) in &[
+            ("user.name", "Test User"),
+            ("user.email", "test@example.com"),
+            ("commit.gpgsign", "false"),
+        ] {
+            Command::new("git")
+                .args(["config", "--local", key, value])
+                .current_dir(dir)
+                .status()?;
+        }
 
         Ok(())
     }

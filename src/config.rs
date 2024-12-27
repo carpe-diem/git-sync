@@ -7,7 +7,7 @@ use std::io::{self, Write};
 pub struct Config {
     pub github_token: String,
     pub github_repo: String,
-    pub notes_path: String,
+    pub directory_path: String,
 }
 
 impl Config {
@@ -28,7 +28,7 @@ impl Config {
         let existing_config = Self::load()?.unwrap_or(Config {
             github_token: String::new(),
             github_repo: String::new(),
-            notes_path: String::new(),
+            directory_path: String::new(),
         });
 
         let config = Config {
@@ -40,9 +40,9 @@ impl Config {
                 "Enter repository (format: username/repo)",
                 &existing_config.github_repo,
             )?,
-            notes_path: prompt_with_default(
-                "Enter path to your Notes folder",
-                &existing_config.notes_path,
+            directory_path: prompt_with_default(
+                "Enter path to your directory to sync",
+                &existing_config.directory_path,
             )?,
         };
 
@@ -111,7 +111,7 @@ mod tests {
         let config = Config {
             github_token: "test_token".to_string(),
             github_repo: "user/repo".to_string(),
-            notes_path: "/path/to/notes".to_string(),
+            directory_path: "/path/to/notes".to_string(),
         };
 
         let serialized = serde_json::to_string(&config).unwrap();
@@ -119,7 +119,7 @@ mod tests {
 
         assert_eq!(config.github_token, deserialized.github_token);
         assert_eq!(config.github_repo, deserialized.github_repo);
-        assert_eq!(config.notes_path, deserialized.notes_path);
+        assert_eq!(config.directory_path, deserialized.directory_path);
     }
 
     #[test]
@@ -132,7 +132,7 @@ mod tests {
         let test_config = Config {
             github_token: "temp_token".to_string(),
             github_repo: "temp/repo".to_string(),
-            notes_path: "/temp/path".to_string(),
+            directory_path: "/temp/path".to_string(),
         };
 
         // Save config directly to temp file
@@ -146,7 +146,7 @@ mod tests {
         // Verify contents
         assert_eq!(test_config.github_token, loaded_config.github_token);
         assert_eq!(test_config.github_repo, loaded_config.github_repo);
-        assert_eq!(test_config.notes_path, loaded_config.notes_path);
+        assert_eq!(test_config.directory_path, loaded_config.directory_path);
 
         // TempDir will be automatically cleaned up when it goes out of scope
         Ok(())
@@ -207,11 +207,11 @@ mod tests {
         let config = Config {
             github_token: String::new(),
             github_repo: String::new(),
-            notes_path: String::new(),
+            directory_path: String::new(),
         };
 
         assert!(config.github_token.is_empty());
         assert!(config.github_repo.is_empty());
-        assert!(config.notes_path.is_empty());
+        assert!(config.directory_path.is_empty());
     }
 }

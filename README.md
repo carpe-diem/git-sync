@@ -126,3 +126,17 @@ cargo run -- sync   # Run sync command
 ```
 
 Tests are located within each module file. For example, configuration tests can be found in `src/config.rs` under the `tests` module.
+
+## Configuración
+
+1. Crea un token de acceso personal de GitHub:
+   - Ve a https://github.com/settings/tokens
+   - Haz clic en "Generate new token" (Generate new token classic)
+   - Dale un nombre descriptivo a tu token
+   - Selecciona los permisos necesarios (mínimo: `repo` y `read:user`)
+   - Haz clic en "Generate token" y guarda el token en un lugar seguro
+
+2. Configura las variables de entorno:
+   ```bash
+   export GITHUB_TOKEN=tu_token_aquí
+   ```

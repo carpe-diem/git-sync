@@ -33,7 +33,7 @@ impl Config {
 
         let config = Config {
             github_token: prompt_with_default(
-                "Enter your GitHub token",
+                "Enter your GitHub token (https://github.com/settings/tokens)",
                 &existing_config.github_token,
             )?,
             github_repo: prompt_with_default(

@@ -61,14 +61,14 @@ You'll need to provide:
 
 ```
 notes-sync
+├── .github              // GitHub Actions configuration
 ├── src
 │   ├── main.rs          // Application entry point
 │   ├── config.rs        // Project configuration (GitHub token, paths, etc.)
-│   ├── github.rs        // Module to interact with the GitHub API
-│   ├── notes.rs         // Module to read macOS notes
-│   ├── sync.rs          // Synchronization logic
 ├── Cargo.toml           // Project dependencies and configuration
 ├── README.md            // Project documentation
+├── .gitignore           // Ignore files and directories
+├── LICENSE              // Project license
 ```
 
 ## Development

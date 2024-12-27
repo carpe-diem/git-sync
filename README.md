@@ -65,6 +65,36 @@ notes-sync
 
 ## Development
 
+### Pre-commit Hooks
+This project uses pre-commit hooks to ensure code quality. The hooks run:
+- `cargo test`: Run all tests
+- `cargo fmt`: Check code formatting
+- `cargo clippy`: Run the Rust linter
+
+To set up pre-commit:
+
+1. Install pre-commit:
+```bash
+# macOS
+brew install pre-commit
+
+# Linux
+pip install pre-commit
+
+# Windows
+pip install pre-commit
+```
+
+2. Install the hooks:
+```bash
+pre-commit install
+```
+
+The hooks will now run automatically on every commit. You can also run them manually:
+```bash
+pre-commit run --all-files
+```
+
 ### Building
 ```bash
 cargo build        # Debug build

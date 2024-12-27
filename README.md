@@ -13,13 +13,12 @@ A simple CLI tool to synchronize any directory with GitHub. Keep your files back
 
 ## Features
 - Synchronization with GitHub repositories
-- Two-way sync between local directory and remote repository
 - Simple configuration and setup
 
 ## TODO
-- Automatic synchronization with GitHub repositories.
+- - Two-way sync between local directory and remote repository
 - Support for multiple GitHub repositories.
-- Two-way sync between local files and remote repository.
+- Support for multiple Local directories.
 
 ## Description
 

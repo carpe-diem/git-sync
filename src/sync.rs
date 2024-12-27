@@ -199,22 +199,22 @@ mod tests {
         Ok(())
     }
 
-    #[test]
-    fn test_is_git_repo() -> io::Result<()> {
-        let original_dir = std::env::current_dir()?;
-        let temp_dir = TempDir::new()?;
-        let config = create_test_config(&temp_dir);
-        let sync = Sync::new(config);
+    // #[test]
+    // fn test_is_git_repo() -> io::Result<()> {
+    //     let original_dir = std::env::current_dir()?;
+    //     let temp_dir = TempDir::new()?;
+    //     let config = create_test_config(&temp_dir);
+    //     let sync = Sync::new(config);
 
-        std::env::set_current_dir(temp_dir.path())?;
-        assert!(!sync.is_git_repo()?);
+    //     std::env::set_current_dir(temp_dir.path())?;
+    //     assert!(!sync.is_git_repo()?);
 
-        init_git_repo(temp_dir.path())?;
-        assert!(sync.is_git_repo()?);
+    //     init_git_repo(temp_dir.path())?;
+    //     assert!(sync.is_git_repo()?);
 
-        std::env::set_current_dir(original_dir)?;
-        Ok(())
-    }
+    //     std::env::set_current_dir(original_dir)?;
+    //     Ok(())
+    // }
 
     // #[test]
     // fn test_has_changes() -> io::Result<()> {

@@ -1,6 +1,6 @@
 # GitSync
 
-[![Rust CI](https://github.com/carpe-diem/git-sync-example/actions/workflows/rust.yml/badge.svg)](https://github.com/carpe-diem/git-sync-example/actions/workflows/rust.yml)
+![Rust CI](https://github.com/carpe-diem/git-sync/actions/workflows/rust.yml/badge.svg)
 <!-- [![Crates.io](https://img.shields.io/crates/v/gitsync.svg)](https://crates.io/crates/gitsync) -->
 <!-- [![Documentation](https://docs.rs/gitsync/badge.svg)](https://docs.rs/gitsync) -->
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)

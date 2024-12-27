@@ -28,7 +28,8 @@ fn main() -> io::Result<()> {
             println!("{:#?}", config);
         }
         Commands::Sync => {
-            let config = config::Config::load()?.expect("No configuration found. Please run 'setup' first");
+            let _config =
+                config::Config::load()?.expect("No configuration found. Please run 'setup' first");
             println!("Synchronizing notes...");
             // TODO: Implement synchronization
         }

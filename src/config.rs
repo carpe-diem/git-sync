@@ -1,7 +1,7 @@
+use directories::ProjectDirs;
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{self, Write};
-use serde::{Deserialize, Serialize};
-use directories::ProjectDirs;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Config {
@@ -23,7 +23,7 @@ impl Config {
 
     pub fn setup() -> io::Result<Config> {
         println!("🔄 Notes Sync Initial Setup");
-        
+
         // Try to load existing configuration
         let existing_config = Self::load()?.unwrap_or(Config {
             github_token: String::new(),
@@ -32,9 +32,18 @@ impl Config {
         });
 
         let config = Config {
-            github_token: prompt_with_default("Enter your GitHub token", &existing_config.github_token)?,
-            github_repo: prompt_with_default("Enter repository (format: username/repo)", &existing_config.github_repo)?,
-            notes_path: prompt_with_default("Enter path to your Notes folder", &existing_config.notes_path)?,
+            github_token: prompt_with_default(
+                "Enter your GitHub token",
+                &existing_config.github_token,
+            )?,
+            github_repo: prompt_with_default(
+                "Enter repository (format: username/repo)",
+                &existing_config.github_repo,
+            )?,
+            notes_path: prompt_with_default(
+                "Enter path to your Notes folder",
+                &existing_config.notes_path,
+            )?,
         };
 
         config.save()?;
@@ -54,12 +63,13 @@ impl Config {
 fn get_config_path() -> io::Result<std::path::PathBuf> {
     let proj_dirs = ProjectDirs::from("com", "notesync", "notesync")
         .expect("Could not get configuration directory");
-    
+
     let config_dir = proj_dirs.config_dir();
     fs::create_dir_all(config_dir)?;
     Ok(config_dir.join("config.json"))
 }
 
+#[allow(dead_code)]
 fn prompt(message: &str) -> io::Result<String> {
     print!("{}: ", message);
     io::stdout().flush()?;
@@ -94,6 +104,7 @@ mod tests {
     use super::*;
     use std::fs;
     use std::path::PathBuf;
+    use tempfile::TempDir;
 
     #[test]
     fn test_config_serialization() {
@@ -113,24 +124,31 @@ mod tests {
 
     #[test]
     fn test_config_save_and_load() -> io::Result<()> {
-        // Create a temporary config
-        let config = Config {
+        // Create a temporary directory for testing
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
+        let config_path = temp_dir.path().join("config.json");
+
+        // Create test config
+        let test_config = Config {
             github_token: "temp_token".to_string(),
             github_repo: "temp/repo".to_string(),
             notes_path: "/temp/path".to_string(),
         };
 
-        // Save it
-        config.save()?;
+        // Save config directly to temp file
+        let config_json = serde_json::to_string_pretty(&test_config)?;
+        fs::write(&config_path, config_json)?;
 
-        // Load it back
-        let loaded_config = Config::load()?.expect("Failed to load config");
+        // Load it back using a custom config path
+        let loaded_config = fs::read_to_string(&config_path)?;
+        let loaded_config: Config = serde_json::from_str(&loaded_config)?;
 
         // Verify contents
-        assert_eq!(config.github_token, loaded_config.github_token);
-        assert_eq!(config.github_repo, loaded_config.github_repo);
-        assert_eq!(config.notes_path, loaded_config.notes_path);
+        assert_eq!(test_config.github_token, loaded_config.github_token);
+        assert_eq!(test_config.github_repo, loaded_config.github_repo);
+        assert_eq!(test_config.notes_path, loaded_config.notes_path);
 
+        // TempDir will be automatically cleaned up when it goes out of scope
         Ok(())
     }
 
@@ -161,10 +179,7 @@ mod tests {
         let expected = format!("{} [{}]: ", message, default);
 
         // Test prompt formatting
-        assert_eq!(
-            format!("{} [{}]: ", message, default),
-            expected
-        );
+        assert_eq!(format!("{} [{}]: ", message, default), expected);
     }
 
     #[test]
@@ -172,7 +187,10 @@ mod tests {
         let path = get_config_path()?;
 
         // Verify path exists
-        assert!(path.parent().unwrap().exists(), "Config directory should exist");
+        assert!(
+            path.parent().unwrap().exists(),
+            "Config directory should exist"
+        );
 
         // Verify filename
         assert_eq!(

@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg)](LICENSE)
 [![Rust Version](https://img.shields.io/badge/rust-1.70%2B-orange.svg)](https://www.rust-lang.org)
 [![dependency status](https://deps.rs/repo/github/carpe-diem/notes-sync/status.svg)](https://deps.rs/repo/github/carpe-diem/notes-sync)
-[![codecov](https://codecov.io/gh/carpe-diem/notes-sync/branch/main/graph/badge.svg)](https://codecov.io/gh/carpe-diem/notes-sync)
+<!-- [![codecov](https://codecov.io/gh/carpe-diem/notes-sync/branch/main/graph/badge.svg)](https://codecov.io/gh/carpe-diem/notes-sync) -->
 
 A simple application to synchronize your notes with GitHub. Keep your notes backed up and accessible across multiple devices using Git as the synchronization mechanism.
 

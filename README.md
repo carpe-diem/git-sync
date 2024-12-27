@@ -15,13 +15,39 @@ A simple application to synchronize your notes with GitHub. Keep your notes back
 Notes Sync is a tool designed to help you maintain your notes organized and synchronized using GitHub as a backend. It watches for changes in your local notes directory and automatically commits and pushes changes to your configured GitHub repository.
 
 ## Usage
-    TODO
+```bash
+# Initial setup
+notesync setup
+
+# Sync your notes
+notesync sync
+```
 
 ## Installation
-    TODO
+1. Install Rust if you haven't already:
+   ```bash
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   ```
+
+2. Clone and build the project:
+   ```bash
+   git clone [repository-url]
+   cd notes-sync
+   cargo build --release
+   ```
+
+3. The binary will be available at `target/release/notesync`
 
 ## Configuration
-    TODO
+Run the setup command and follow the prompts:
+```bash
+notesync setup
+```
+
+You'll need to provide:
+- GitHub Personal Access Token (with repo permissions)
+- GitHub repository (format: username/repo)
+- Path to your Notes folder
 
 ## Project Structure
 
@@ -35,5 +61,27 @@ notes-sync
 │   ├── sync.rs          // Synchronization logic
 ├── Cargo.toml           // Project dependencies and configuration
 ├── README.md            // Project documentation
-
 ```
+
+## Development
+
+### Building
+```bash
+cargo build        # Debug build
+cargo build --release  # Release build
+```
+
+### Testing
+```bash
+cargo test              # Run all tests
+cargo test config      # Run tests for config module only
+cargo test -- --nocapture  # Run tests and show println output
+```
+
+### Running in Development
+```bash
+cargo run -- setup  # Run setup command
+cargo run -- sync   # Run sync command
+```
+
+Tests are located within each module file. For example, configuration tests can be found in `src/config.rs` under the `tests` module.

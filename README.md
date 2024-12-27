@@ -11,12 +11,12 @@
 A simple application to synchronize your notes with GitHub. Keep your notes backed up and accessible across multiple devices using Git as the synchronization mechanism.
 
 ## Features
-    ...
+- ...
 
 ## TODO
--[ ] Automatic synchronization with GitHub repositories
--[ ] Support for multiple GitHub repositories
--[ ] Two-way sync between local files and remote repository
+- Automatic synchronization with GitHub repositories.
+- Support for multiple GitHub repositories.
+- Two-way sync between local files and remote repository.
 
 ## Description
 

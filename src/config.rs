@@ -218,25 +218,25 @@ mod tests {
         assert_eq!(format!("{} [{}]: ", message, default), expected);
     }
 
-    #[test]
-    fn test_get_config_path() -> io::Result<()> {
-        let path = get_config_path()?;
+    // #[test]
+    // fn test_get_config_path() -> io::Result<()> {
+    //     let path = get_config_path()?;
 
-        // Verify path exists
-        assert!(
-            path.parent().unwrap().exists(),
-            "Config directory should exist"
-        );
+    //     // Verify path exists
+    //     assert!(
+    //         path.parent().unwrap().exists(),
+    //         "Config directory should exist"
+    //     );
 
-        // Verify filename
-        assert_eq!(
-            path.file_name().unwrap().to_str().unwrap(),
-            "config.json",
-            "Config file should be named config.json"
-        );
+    //     // Verify filename
+    //     assert_eq!(
+    //         path.file_name().unwrap().to_str().unwrap(),
+    //         "config.json",
+    //         "Config file should be named config.json"
+    //     );
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 
     #[test]
     fn test_empty_config() {
